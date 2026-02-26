@@ -1,29 +1,14 @@
 {
   "version": 2,
   "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
+  "outputDirectory": "dist/public",
   "env": {
     "NODE_ENV": "production"
   },
-  "functions": {
-    "server/_core/index.ts": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server/_core/index.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/public/index.html"
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/client/public/$1"
+      "destination": "/index.html"
     }
   ]
 }
