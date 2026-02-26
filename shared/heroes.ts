@@ -1,6 +1,6 @@
 /**
  * Hero data for LastWar game
- * Based on tier list and hero guide from user document
+ * Based on Last War Handbook database with real skills and stats
  */
 
 export type HeroRarity = 'UR' | 'SSR' | 'SR' | 'R';
@@ -14,8 +14,15 @@ export interface Ability {
   name: string;
   description: string;
   type: AbilityType;
-  unlocksAt: number; // Estrela em que desbloqueia (1-5)
-  maxLevel: number; // Máximo de níveis (30)
+  unlocksAt: number;
+  maxLevel: number;
+}
+
+export interface HeroStats {
+  atk: number;
+  def: number;
+  hp: number;
+  spd: number;
 }
 
 export interface Hero {
@@ -29,6 +36,7 @@ export interface Hero {
   image: string;
   description?: string;
   abilities: Ability[];
+  stats: HeroStats;
 }
 
 const createAbility = (id: string, name: string, desc: string, type: AbilityType, unlocksAt: number = 1): Ability => ({
@@ -40,9 +48,15 @@ const createAbility = (id: string, name: string, desc: string, type: AbilityType
   maxLevel: 30,
 });
 
+const createStats = (atk: number, def: number, hp: number, spd: number): HeroStats => ({
+  atk,
+  def,
+  hp,
+  spd,
+});
+
 export const HEROES: Hero[] = [
   // ===== TANQUE (Tipo do herói) =====
-  // UR Raridade
   {
     id: 'murphy',
     name: 'Murphy',
@@ -50,13 +64,14 @@ export const HEROES: Hero[] = [
     type: 'Tanque',
     role: 'Defesa',
     position: 'Front Row',
-    tier: 'S+',
+    tier: 'A',
     image: '/heroes/murphy.png',
-    description: 'Tanque supremo com defesa excepcional',
+    description: 'Free tutorial Tank hero. Excellent survivability and front-row protection.',
     abilities: [
       createAbility('murphy-1', 'Cannon Fire', 'Dispara canhão causando dano físico', 'Damage', 1),
       createAbility('murphy-2', 'Stand Firm', 'Aumenta defesa e sobrevivência', 'Defense', 2),
     ],
+    stats: createStats(2400, 2800, 26000, 85),
   },
   {
     id: 'marshall',
@@ -67,11 +82,12 @@ export const HEROES: Hero[] = [
     position: 'Front Row',
     tier: 'S',
     image: '/heroes/marshall.png',
-    description: 'Tanque versátil com bom dano',
+    description: 'S-tier Support Tank. Provides team-wide attack buff and cooldown speed boost.',
     abilities: [
       createAbility('marshall-1', 'Triad Harmony', 'Buff de ataque em equipe', 'Support', 1),
       createAbility('marshall-2', 'Rapid Start', 'Aumenta velocidade de recarga de habilidades', 'Support', 2),
     ],
+    stats: createStats(2800, 3400, 30000, 80),
   },
   {
     id: 'williams',
@@ -79,14 +95,15 @@ export const HEROES: Hero[] = [
     rarity: 'UR',
     type: 'Tanque',
     role: 'Defesa',
-    position: 'Back Row',
+    position: 'Front Row',
     tier: 'S',
     image: '/heroes/williams.png',
-    description: 'Defesa de elite',
+    description: 'S-tier defensive Tank. Provides massive damage reduction to frontline allies.',
     abilities: [
       createAbility('williams-1', 'Stun Bomb', 'Atordoa inimigos', 'Control', 1),
       createAbility('williams-2', 'All-Around Armor', 'Redução de dano massiva para aliados', 'Defense', 2),
     ],
+    stats: createStats(3200, 2200, 20000, 95),
   },
   {
     id: 'stefmann',
@@ -97,26 +114,28 @@ export const HEROES: Hero[] = [
     position: 'Front Row',
     tier: 'S',
     image: '/heroes/stefmann.png',
-    description: 'Tanque especializado em defesa',
+    description: 'Tanque especializado em defesa com artilharia pesada.',
     abilities: [
       createAbility('stefmann-1', 'Heavy Artillery', 'Artilharia pesada', 'Damage', 1),
       createAbility('stefmann-2', 'Fortified Position', 'Posição fortificada', 'Defense', 2),
     ],
+    stats: createStats(2600, 3000, 28000, 75),
   },
   {
     id: 'kimberly',
     name: 'Kimberly',
     rarity: 'UR',
     type: 'Tanque',
-    role: 'Defesa',
+    role: 'Dano',
     position: 'Front Row',
-    tier: 'S+',
+    tier: 'S',
     image: '/heroes/kimberly.png',
-    description: 'Tanque com dano de energia AoE',
+    description: 'Top-tier Tank hero with devastating AoE energy damage. Essential for tank formations.',
     abilities: [
       createAbility('kimberly-1', 'Energy Assault', 'Ataque de energia AoE devastador', 'Damage', 1),
       createAbility('kimberly-2', 'Energy Boost', 'Aumenta dano de energia do esquadrão', 'Support', 2),
     ],
+    stats: createStats(2200, 3200, 28000, 85),
   },
   {
     id: 'mcgragor',
@@ -127,11 +146,12 @@ export const HEROES: Hero[] = [
     position: 'Front Row',
     tier: 'A',
     image: '/heroes/mcgragor.png',
-    description: 'Tanque estratégico',
+    description: 'Highland tank warrior with strong defensive capabilities and team leadership.',
     abilities: [
       createAbility('mcgragor-1', 'Highland Charge', 'Carga ofensiva', 'Damage', 1),
       createAbility('mcgragor-2', 'Defensive Stand', 'Postura defensiva', 'Defense', 2),
     ],
+    stats: createStats(2600, 3000, 28000, 75),
   },
   {
     id: 'farhad',
@@ -142,14 +162,13 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'B',
     image: '/heroes/farhad.png',
-    description: 'Tanque com dano',
+    description: 'Tanque com dano de especialista.',
     abilities: [
       createAbility('farhad-1', 'Desert Storm', 'Tempestade do deserto', 'Damage', 1),
       createAbility('farhad-2', 'Sand Armor', 'Armadura de areia', 'Defense', 2),
     ],
+    stats: createStats(2400, 2600, 24000, 80),
   },
-
-  // SSR Raridade
   {
     id: 'mason',
     name: 'Mason',
@@ -157,13 +176,14 @@ export const HEROES: Hero[] = [
     type: 'Tanque',
     role: 'Dano',
     position: 'Back Row',
-    tier: 'A+',
+    tier: 'A',
     image: '/heroes/mason.png',
-    description: 'Guerreiro com bom equilíbrio',
+    description: 'Top SSR Tank that can be upgraded to UR. Excellent PvE damage with Zombie Purge.',
     abilities: [
       createAbility('mason-1', 'Quick Reload', 'Recarga rápida', 'Support', 1),
       createAbility('mason-2', 'Zombie Purge', 'Dano especial contra zumbis', 'Damage', 2),
     ],
+    stats: createStats(1500, 2600, 22000, 75),
   },
   {
     id: 'violet',
@@ -172,13 +192,14 @@ export const HEROES: Hero[] = [
     type: 'Tanque',
     role: 'Defesa',
     position: 'Back Row',
-    tier: 'A+',
+    tier: 'A',
     image: '/heroes/violet.png',
-    description: 'Defesa especializada',
+    description: 'Strong missile vehicle that can be upgraded to UR. Excellent for area damage.',
     abilities: [
       createAbility('violet-1', 'Plasma Burst', 'Explosão de plasma', 'Damage', 1),
       createAbility('violet-2', 'Energy Shield', 'Escudo de energia', 'Defense', 2),
     ],
+    stats: createStats(2800, 1400, 14000, 92),
   },
   {
     id: 'scarlett',
@@ -187,13 +208,14 @@ export const HEROES: Hero[] = [
     type: 'Tanque',
     role: 'Defesa',
     position: 'Back Row',
-    tier: 'A+',
+    tier: 'A',
     image: '/heroes/scarlett.png',
-    description: 'Guerreira defensiva',
+    description: 'SSR Tank that can be upgraded to UR. Provides damage reduction against monsters.',
     abilities: [
       createAbility('scarlett-1', 'Flame Burst', 'Explosão de chama', 'Damage', 1),
       createAbility('scarlett-2', 'T-5 Armor', 'Redução de dano contra monstros', 'Defense', 2),
     ],
+    stats: createStats(1600, 1800, 16000, 90),
   },
   {
     id: 'monica',
@@ -202,13 +224,14 @@ export const HEROES: Hero[] = [
     type: 'Tanque',
     role: 'Suporte',
     position: 'Back Row',
-    tier: 'B+',
+    tier: 'B',
     image: '/heroes/monica.png',
-    description: 'Suporte SSR',
+    description: 'Suporte SSR com habilidades de cura.',
     abilities: [
       createAbility('monica-1', 'Medical Supply Drop', 'Suprimentos médicos', 'Support', 1),
       createAbility('monica-2', 'Field Medic Training', 'Treinamento de paramédico', 'Support', 2),
     ],
+    stats: createStats(1200, 1600, 14000, 85),
   },
   {
     id: 'richard',
@@ -219,14 +242,13 @@ export const HEROES: Hero[] = [
     position: 'Front Row',
     tier: 'B',
     image: '/heroes/richard.png',
-    description: 'Tanque SSR',
+    description: 'Tanque SSR com capacidade de dano.',
     abilities: [
       createAbility('richard-1', 'Precision Strike', 'Ataque de precisão', 'Damage', 1),
       createAbility('richard-2', 'Tactical Analysis', 'Analisa tática do inimigo', 'Support', 2),
     ],
+    stats: createStats(1800, 2000, 18000, 80),
   },
-
-  // SR Raridade
   {
     id: 'gump',
     name: 'Gump',
@@ -236,11 +258,12 @@ export const HEROES: Hero[] = [
     position: 'Front Row',
     tier: 'B',
     image: '/heroes/gump.png',
-    description: 'Tanque iniciante',
+    description: 'Tanque iniciante com boas defesas.',
     abilities: [
       createAbility('gump-1', 'Shield Bash', 'Golpe de escudo', 'Damage', 1),
       createAbility('gump-2', 'Defensive Stance', 'Postura defensiva', 'Defense', 2),
     ],
+    stats: createStats(1200, 2000, 15000, 70),
   },
   {
     id: 'loki',
@@ -251,15 +274,15 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'B',
     image: '/heroes/loki.png',
-    description: 'Defesa SR',
+    description: 'Defesa SR com habilidades enganosas.',
     abilities: [
       createAbility('loki-1', 'Trickster Strike', 'Golpe enganoso', 'Damage', 1),
       createAbility('loki-2', 'Illusory Defense', 'Defesa ilusória', 'Defense', 2),
     ],
+    stats: createStats(1100, 1700, 12000, 75),
   },
 
   // ===== MÍSSIL (Tipo do herói) =====
-  // UR Raridade
   {
     id: 'tesla',
     name: 'Tesla',
@@ -267,13 +290,14 @@ export const HEROES: Hero[] = [
     type: 'Míssil',
     role: 'Dano',
     position: 'Back Row',
-    tier: 'A+',
+    tier: 'S',
     image: '/heroes/tesla.png',
-    description: 'Míssil técnico',
+    description: 'Top DPS Missile Vehicle hero. Incredible energy damage with Inductive Current stacking.',
     abilities: [
       createAbility('tesla-1', 'Lightning Chain', 'Corrente de relâmpagos', 'Damage', 1),
       createAbility('tesla-2', 'Electric Power Boost', 'Aumento de dano elétrico', 'Support', 2),
     ],
+    stats: createStats(3800, 1600, 16000, 110),
   },
   {
     id: 'adam',
@@ -281,14 +305,15 @@ export const HEROES: Hero[] = [
     rarity: 'UR',
     type: 'Míssil',
     role: 'Defesa',
-    position: 'Back Row',
-    tier: 'B',
+    position: 'Front Row',
+    tier: 'A',
     image: '/heroes/adam.png',
-    description: 'Defesa Míssil',
+    description: 'Survivor missile specialist with improvised weapons and adaptability.',
     abilities: [
-      createAbility('adam-1', 'Survivor Instinct', 'Instinto de sobrevivência', 'Defense', 1),
-      createAbility('adam-2', 'Improvised Weapons', 'Armas improvisadas', 'Damage', 2),
+      createAbility('adam-1', 'Rocket Launcher', 'Lançador de foguetes', 'Damage', 1),
+      createAbility('adam-2', 'Makeshift Armor', 'Armadura improvisada', 'Defense', 2),
     ],
+    stats: createStats(3600, 1600, 17000, 95),
   },
   {
     id: 'swift',
@@ -297,13 +322,14 @@ export const HEROES: Hero[] = [
     type: 'Míssil',
     role: 'Dano',
     position: 'Back Row',
-    tier: 'B+',
+    tier: 'A',
     image: '/heroes/swift.png',
-    description: 'Míssil rápido',
+    description: 'Ultra-fast missile vehicle specializing in hit-and-run tactics.',
     abilities: [
       createAbility('swift-1', 'Hit and Run', 'Ataque e fuga', 'Damage', 1),
       createAbility('swift-2', 'Speed Boost', 'Aumento de velocidade', 'Support', 2),
     ],
+    stats: createStats(3700, 1500, 16000, 130),
   },
   {
     id: 'fiona',
@@ -312,16 +338,15 @@ export const HEROES: Hero[] = [
     type: 'Míssil',
     role: 'Dano',
     position: 'Back Row',
-    tier: 'A',
+    tier: 'S+',
     image: '/heroes/fiona.png',
-    description: 'Dano Míssil',
+    description: 'SS-tier Missile Vehicle nuker. Devastating AoE physical damage dealer. HIGHEST DPS.',
     abilities: [
       createAbility('fiona-1', 'Double Trajectory', 'Trajetória dupla - AoE físico devastador', 'Damage', 1),
       createAbility('fiona-2', 'Ballistic Boost', 'Aumento balístico', 'Support', 2),
     ],
+    stats: createStats(4200, 1400, 15000, 90),
   },
-
-  // SSR Raridade
   {
     id: 'venom',
     name: 'Venom',
@@ -331,11 +356,12 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'A',
     image: '/heroes/venom.png',
-    description: 'Dano SSR confiável',
+    description: 'Dano SSR confiável com efeitos de controle.',
     abilities: [
       createAbility('venom-1', 'Toxic Injection', 'Injeção tóxica', 'Damage', 1),
       createAbility('venom-2', 'Poison Cloud', 'Nuvem de veneno', 'Control', 2),
     ],
+    stats: createStats(2600, 1200, 13000, 88),
   },
   {
     id: 'braz',
@@ -346,29 +372,29 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'B',
     image: '/heroes/braz.png',
-    description: 'Dano SSR',
+    description: 'Dano SSR com especialidade em fogo.',
     abilities: [
       createAbility('braz-1', 'Inferno Blast', 'Explosão infernal', 'Damage', 1),
       createAbility('braz-2', 'Heat Wave', 'Onda de calor', 'Damage', 2),
     ],
+    stats: createStats(2800, 1100, 12000, 85),
   },
   {
     id: 'elsa',
     name: 'Elsa',
     rarity: 'SSR',
     type: 'Míssil',
-    role: 'Defesa',
+    role: 'Suporte',
     position: 'Back Row',
-    tier: 'B+',
+    tier: 'B',
     image: '/heroes/elsa.png',
-    description: 'Defesa SSR',
+    description: 'Suporte SSR com habilidades de controle.',
     abilities: [
       createAbility('elsa-1', 'Frost Shield', 'Escudo de gelo', 'Defense', 1),
       createAbility('elsa-2', 'Freeze Ray', 'Raio de congelamento', 'Control', 2),
     ],
+    stats: createStats(1800, 1400, 11000, 82),
   },
-
-  // SR Raridade
   {
     id: 'kane',
     name: 'Kane',
@@ -378,44 +404,46 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'B',
     image: '/heroes/kane.png',
-    description: 'Dano SR',
+    description: 'Dano SR com ataque de míssil.',
     abilities: [
       createAbility('kane-1', 'Missile Strike', 'Ataque de míssil', 'Damage', 1),
       createAbility('kane-2', 'Research Upgrade', 'Melhora de pesquisa', 'Support', 2),
     ],
+    stats: createStats(1400, 1000, 8000, 85),
   },
 
   // ===== AERONAVE (Tipo do herói) =====
-  // UR Raridade
   {
     id: 'dva',
     name: 'DVA',
     rarity: 'UR',
     type: 'Aeronave',
     role: 'Dano',
-    position: 'Front Row',
+    position: 'Back Row',
     tier: 'S',
     image: '/heroes/dva.png',
-    description: 'Herói Aeronave de primeira linha',
+    description: 'S-tier Aircraft damage dealer with exceptional burst damage. Core of any Aircraft team.',
     abilities: [
       createAbility('dva-1', 'Vortex Missile', 'Dano de explosão em rajada', 'Damage', 1),
       createAbility('dva-2', 'Armament Upgrade', 'Melhora armamento', 'Support', 2),
     ],
+    stats: createStats(2000, 3500, 32000, 75),
   },
   {
     id: 'lucius',
     name: 'Lucius',
     rarity: 'UR',
     type: 'Aeronave',
-    role: 'Defesa',
+    role: 'Dano',
     position: 'Back Row',
-    tier: 'A+',
+    tier: 'A',
     image: '/heroes/lucius.png',
-    description: 'Defesa Aeronave de qualidade',
+    description: 'Elite aircraft pilot with superior aerial combat skills and team coordination.',
     abilities: [
       createAbility('lucius-1', 'Dive Bomb', 'Bombardeio em mergulho', 'Damage', 1),
       createAbility('lucius-2', 'Sky Patrol', 'Patrulha aérea', 'Support', 2),
     ],
+    stats: createStats(3500, 1900, 18000, 125),
   },
   {
     id: 'schuyler',
@@ -424,13 +452,14 @@ export const HEROES: Hero[] = [
     type: 'Aeronave',
     role: 'Dano',
     position: 'Back Row',
-    tier: 'A+',
+    tier: 'A',
     image: '/heroes/schuyler.png',
-    description: 'Especialista em Aeronave',
+    description: 'A-tier tech aircraft with precision strikes and system enhancements.',
     abilities: [
       createAbility('schuyler-1', 'Precision Strike', 'Ataque de precisão', 'Damage', 1),
       createAbility('schuyler-2', 'Tech Upgrade', 'Melhora tecnológica', 'Support', 2),
     ],
+    stats: createStats(3400, 2000, 19000, 115),
   },
   {
     id: 'morrison',
@@ -441,28 +470,28 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'A',
     image: '/heroes/morrison.png',
-    description: 'Dano Aeronave versátil',
+    description: 'Naval aviation specialist with versatile combat capabilities.',
     abilities: [
       createAbility('morrison-1', 'Naval Strike', 'Ataque naval', 'Damage', 1),
       createAbility('morrison-2', 'Carrier Landing', 'Pouso em porta-aviões', 'Support', 2),
     ],
+    stats: createStats(3300, 2100, 19000, 110),
   },
-
-  // SSR Raridade
   {
     id: 'carlie',
     name: 'Carlie',
-    rarity: 'SSR',
+    rarity: 'UR',
     type: 'Aeronave',
     role: 'Defesa',
-    position: 'Back Row',
-    tier: 'B+',
+    position: 'Front Row',
+    tier: 'A',
     image: '/heroes/carlie.png',
-    description: 'Defesa Aeronave',
+    description: 'A-tier Aircraft Tank. Excellent energy damage reduction for the team.',
     abilities: [
       createAbility('carlie-1', 'Dual-string Rocket', 'Foguete duplo', 'Damage', 1),
       createAbility('carlie-2', 'Energy Adaption', 'Redução de dano de energia', 'Defense', 2),
     ],
+    stats: createStats(3600, 1800, 18000, 120),
   },
   {
     id: 'cage',
@@ -470,14 +499,15 @@ export const HEROES: Hero[] = [
     rarity: 'SSR',
     type: 'Aeronave',
     role: 'Defesa',
-    position: 'Back Row',
-    tier: 'B+',
+    position: 'Front Row',
+    tier: 'B',
     image: '/heroes/cage.png',
-    description: 'Defesa Aeronave',
+    description: 'Defesa Aeronave com campo de contenção.',
     abilities: [
       createAbility('cage-1', 'Containment Field', 'Campo de contenção', 'Control', 1),
       createAbility('cage-2', 'Reinforced Hull', 'Casco reforçado', 'Defense', 2),
     ],
+    stats: createStats(2200, 2400, 17000, 95),
   },
   {
     id: 'sara',
@@ -486,13 +516,14 @@ export const HEROES: Hero[] = [
     type: 'Aeronave',
     role: 'Suporte',
     position: 'Back Row',
-    tier: 'A+',
+    tier: 'A',
     image: '/heroes/sara.png',
-    description: 'Suporte Aeronave',
+    description: 'Suporte Aeronave com reconhecimento aéreo.',
     abilities: [
       createAbility('sara-1', 'Air Reconnaissance', 'Reconhecimento aéreo', 'Support', 1),
       createAbility('sara-2', 'Evasive Flying', 'Voo evasivo', 'Defense', 2),
     ],
+    stats: createStats(1600, 1800, 13000, 105),
   },
   {
     id: 'maxell',
@@ -503,14 +534,13 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'B',
     image: '/heroes/maxell.png',
-    description: 'Dano Aeronave',
+    description: 'Dano Aeronave com pulso eletromagnético.',
     abilities: [
       createAbility('maxell-1', 'Electromagnetic Pulse', 'Pulso eletromagnético', 'Damage', 1),
       createAbility('maxell-2', 'System Overload', 'Sobrecarga de sistema', 'Control', 2),
     ],
+    stats: createStats(2400, 1600, 14000, 100),
   },
-
-  // SR Raridade
   {
     id: 'ambolt',
     name: 'Ambolt',
@@ -520,11 +550,12 @@ export const HEROES: Hero[] = [
     position: 'Back Row',
     tier: 'B',
     image: '/heroes/ambolt.png',
-    description: 'Dano Aeronave',
+    description: 'Dano Aeronave com ataque de relâmpago.',
     abilities: [
       createAbility('ambolt-1', 'Lightning Strike', 'Golpe de relâmpago', 'Damage', 1),
       createAbility('ambolt-2', 'Static Charge', 'Carga estática', 'Support', 2),
     ],
+    stats: createStats(1300, 900, 7000, 100),
   },
 ];
 
@@ -563,14 +594,9 @@ export const SQUAD_POSITIONS = {
 };
 
 export const HERO_PRIORITIES = {
-  Tanque: ['Murphy', 'Marshall', 'Stefmann', 'Williams', 'DVA'],
+  Tanque: ['Murphy', 'Marshall', 'Stefmann', 'Williams', 'Kimberly'],
   Aeronave: ['DVA', 'Schuyler', 'Morrison', 'Lucius', 'Carlie'],
   Míssil: ['Tesla', 'McGragor', 'Adam', 'Fiona', 'Swift'],
-};
-
-export const GEAR_PRIORITY = {
-  'Front Row': ['Armor', 'Radar'],
-  'Back Row': ['Railgun', 'Chip'],
 };
 
 export function getHeroById(id: string): Hero | undefined {
