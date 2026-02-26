@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -255,9 +256,15 @@ function DashboardLayoutContent({
                 </div>
               </div>
             </div>
+            <LanguageSwitcher />
           </div>
         )}
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-4">
+          <div className="flex justify-end mb-4">
+            {!isMobile && <LanguageSwitcher />}
+          </div>
+          {children}
+        </main>
       </SidebarInset>
     </>
   );
