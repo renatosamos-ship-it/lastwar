@@ -1,11 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertCircle, Zap, Shield, Target } from 'lucide-react';
+import { AlertCircle, Zap, Shield, Target, TrendingUp, Lightbulb } from 'lucide-react';
 import { HEROES, HERO_TYPES } from '@shared/heroes';
-import { getHeroImage } from '@/data/heroImages';
+import HeroCard from '@/components/HeroCard';
 
 export default function HeroAnalyzer() {
   const [selectedHero, setSelectedHero] = useState<any>(null);
@@ -16,7 +15,6 @@ export default function HeroAnalyzer() {
       rarity: hero.rarity,
       type: hero.type,
       role: hero.role,
-      tier: hero.tier,
       position: hero.position,
       recommendations: getRecommendations(hero),
       advantages: getAdvantages(hero),
@@ -28,28 +26,25 @@ export default function HeroAnalyzer() {
     const recs = [];
     
     if (hero.rarity === 'UR') {
-      recs.push('Herói de elite - Priorize o desenvolvimento');
-      recs.push('Invista em armas SSR/UR para maximizar potencial');
+      recs.push('Herói de elite - Priorize o desenvolvimento ao máximo');
+      recs.push('Invista em armas e chips de raridade alta');
     } else if (hero.rarity === 'SSR') {
       recs.push('Excelente herói - Vale muito a pena desenvolver');
       recs.push('Considere como segundo ou terceiro herói principal');
     } else if (hero.rarity === 'SR') {
       recs.push('Bom herói para iniciantes');
       recs.push('Útil para preencher formações enquanto desenvolve UR/SSR');
-    } else {
-      recs.push('Herói iniciante - Use para aprender mecânicas');
-      recs.push('Considere evoluir para raridades maiores');
     }
 
-    if (hero.type === 'Tank') {
+    if (hero.role === 'Defesa') {
       recs.push('Equipar com Defense Chips para maximizar defesa');
       recs.push('Posicionar na primeira linha do esquadrão');
-    } else if (hero.type === 'Air') {
+    } else if (hero.role === 'Dano') {
       recs.push('Equipar com Attack Chips para aumentar dano');
-      recs.push('Excelente contra heróis Tank');
-    } else if (hero.type === 'Missile') {
-      recs.push('Equipar com Interference Chips');
-      recs.push('Especialista contra heróis Air');
+      recs.push('Posicionar na segunda linha para máximo dano');
+    } else if (hero.role === 'Suporte') {
+      recs.push('Equipar com Support Chips para amplificar aliados');
+      recs.push('Posicionar estrategicamente para apoiar o esquadrão');
     }
 
     return recs;
@@ -58,23 +53,31 @@ export default function HeroAnalyzer() {
   const getAdvantages = (hero: any) => {
     const advantages = [];
     
-    if (hero.rarity === 'UR' || hero.rarity === 'SSR') {
-      advantages.push('Alto potencial de dano');
+    if (hero.rarity === 'UR') {
+      advantages.push('Potencial máximo de poder');
+      advantages.push('Habilidades especiais muito fortes');
+    } else if (hero.rarity === 'SSR') {
+      advantages.push('Alto potencial de poder');
+      advantages.push('Boas habilidades especiais');
     }
     
-    if (hero.type === 'Tank') {
-      advantages.push('+20% DMG vs Missile');
+    if (hero.type === 'Tanque') {
       advantages.push('Excelente para absorver dano');
-    } else if (hero.type === 'Air') {
-      advantages.push('+20% DMG vs Tank');
+      advantages.push('Defesa superior contra ataques');
+    } else if (hero.type === 'Aeronave') {
       advantages.push('Mobilidade superior');
-    } else if (hero.type === 'Missile') {
-      advantages.push('+20% DMG vs Air');
+      advantages.push('Ataque rápido e preciso');
+    } else if (hero.type === 'Míssil') {
       advantages.push('Dano de longo alcance');
+      advantages.push('Especialista em controle de campo');
     }
 
-    if (hero.tier === 'S+' || hero.tier === 'S') {
-      advantages.push('Herói meta - Muito forte no jogo');
+    if (hero.role === 'Defesa') {
+      advantages.push('Protetor do esquadrão');
+    } else if (hero.role === 'Dano') {
+      advantages.push('Gerador de dano consistente');
+    } else if (hero.role === 'Suporte') {
+      advantages.push('Amplificador de aliados');
     }
 
     return advantages;
@@ -87,48 +90,28 @@ export default function HeroAnalyzer() {
       'Treinar habilidades especiais',
       'Aplicar chips de drone apropriados',
       'Participar de eventos para ganhar recursos',
+      'Fazer parcerias com heróis complementares',
     ];
   };
 
+  const analysis = selectedHero ? getHeroAnalysis(selectedHero) : null;
+
   return (
     <div className="space-y-6">
-      {/* Seletor de Herói */}
+      {/* Seletor de Heróis */}
       <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-orange-400">Analisar Herói</CardTitle>
-          <CardDescription>Selecione um herói para ver análise detalhada</CardDescription>
+          <CardDescription>Selecione um herói para ver análise detalhada e recomendações</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {HEROES.map((hero) => (
               <div
                 key={hero.id}
                 onClick={() => setSelectedHero(hero)}
-                className={`p-3 rounded border-2 cursor-pointer transition-all ${
-                  selectedHero?.id === hero.id
-                    ? 'border-orange-400 bg-orange-400/10'
-                    : 'border-border hover:border-orange-400'
-                }`}
               >
-                <div className="w-full h-20 bg-gradient-to-b from-purple-600 to-purple-900 rounded mb-2 flex items-center justify-center overflow-hidden">
-                  <img
-                    src={getHeroImage(hero.name)}
-                    alt={hero.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://via.placeholder.com/100x100?text=${hero.name}`;
-                    }}
-                  />
-                </div>
-                <h4 className="text-sm font-semibold text-foreground truncate">{hero.name}</h4>
-                <Badge className={`text-xs mt-1 ${
-                  hero.rarity === 'UR' ? 'bg-yellow-600' :
-                  hero.rarity === 'SSR' ? 'bg-purple-600' :
-                  hero.rarity === 'SR' ? 'bg-blue-600' :
-                  'bg-gray-600'
-                }`}>
-                  {hero.rarity}
-                </Badge>
+                <HeroCard hero={hero} isSelected={selectedHero?.id === hero.id} />
               </div>
             ))}
           </div>
@@ -136,124 +119,156 @@ export default function HeroAnalyzer() {
       </Card>
 
       {/* Análise Detalhada */}
-      {selectedHero && (
-        <Card className="bg-card border-border border-l-4" style={{ borderLeftColor: '#ff6f00' }}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gradient-to-b from-purple-600 to-purple-900 rounded flex items-center justify-center overflow-hidden">
-                  <img
-                    src={getHeroImage(selectedHero.name)}
-                    alt={selectedHero.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://via.placeholder.com/100x100?text=${selectedHero.name}`;
-                    }}
-                  />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl text-orange-400">{selectedHero.name}</CardTitle>
-                  <div className="flex gap-2 mt-2">
-                    <Badge className={`${
-                      selectedHero.rarity === 'UR' ? 'bg-yellow-600' :
-                      selectedHero.rarity === 'SSR' ? 'bg-purple-600' :
-                      selectedHero.rarity === 'SR' ? 'bg-blue-600' :
-                      'bg-gray-600'
-                    }`}>
-                      {selectedHero.rarity}
-                    </Badge>
-                    <Badge variant="outline">{selectedHero.type}</Badge>
-                    <Badge variant="outline">{selectedHero.role}</Badge>
-                    <Badge variant="outline">Tier {selectedHero.tier}</Badge>
+      {selectedHero && analysis && (
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 bg-card border border-border">
+            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+            <TabsTrigger value="advantages">Vantagens</TabsTrigger>
+            <TabsTrigger value="recommendations">Recomendações</TabsTrigger>
+          </TabsList>
+
+          {/* Visão Geral */}
+          <TabsContent value="overview" className="space-y-4 mt-4">
+            {/* Card do Herói Selecionado */}
+            <Card className="bg-card border-border border-l-4 border-l-orange-400">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-3xl text-orange-400 mb-2">{selectedHero.name}</CardTitle>
+                    <div className="flex gap-2 flex-wrap">
+                      <Badge className={`text-sm font-bold ${
+                        selectedHero.rarity === 'UR' ? 'bg-yellow-600 text-yellow-950' :
+                        selectedHero.rarity === 'SSR' ? 'bg-purple-600 text-purple-950' :
+                        selectedHero.rarity === 'SR' ? 'bg-blue-600 text-blue-950' :
+                        'bg-gray-600 text-gray-950'
+                      }`}>
+                        {selectedHero.rarity}
+                      </Badge>
+                      <Badge variant="outline" className="text-sm">{selectedHero.type}</Badge>
+                      <Badge variant="outline" className="text-sm">{selectedHero.role}</Badge>
+                      <Badge variant="outline" className="text-sm">{selectedHero.position}</Badge>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Informações Básicas */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-background rounded border border-border">
-                <p className="text-xs text-muted-foreground mb-1">Tipo</p>
-                <p className="font-semibold text-foreground">{selectedHero.type}</p>
-              </div>
-              <div className="p-4 bg-background rounded border border-border">
-                <p className="text-xs text-muted-foreground mb-1">Papel</p>
-                <p className="font-semibold text-foreground">{selectedHero.role}</p>
-              </div>
-              <div className="p-4 bg-background rounded border border-border">
-                <p className="text-xs text-muted-foreground mb-1">Posição</p>
-                <p className="font-semibold text-foreground">{selectedHero.position}</p>
-              </div>
-              <div className="p-4 bg-background rounded border border-border">
-                <p className="text-xs text-muted-foreground mb-1">Tier</p>
-                <p className="font-semibold text-orange-400 text-lg">{selectedHero.tier}</p>
-              </div>
-            </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Informações em Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-background rounded border border-border">
+                    <p className="text-xs text-muted-foreground mb-1 flex items-center gap-2">
+                      <Shield size={14} /> Tipo
+                    </p>
+                    <p className="font-semibold text-foreground text-lg">{selectedHero.type}</p>
+                  </div>
+                  <div className="p-4 bg-background rounded border border-border">
+                    <p className="text-xs text-muted-foreground mb-1 flex items-center gap-2">
+                      <Target size={14} /> Papel
+                    </p>
+                    <p className="font-semibold text-foreground text-lg">{selectedHero.role}</p>
+                  </div>
+                  <div className="p-4 bg-background rounded border border-border">
+                    <p className="text-xs text-muted-foreground mb-1 flex items-center gap-2">
+                      <TrendingUp size={14} /> Raridade
+                    </p>
+                    <p className="font-semibold text-orange-400 text-lg">{selectedHero.rarity}</p>
+                  </div>
+                  <div className="p-4 bg-background rounded border border-border">
+                    <p className="text-xs text-muted-foreground mb-1 flex items-center gap-2">
+                      <Zap size={14} /> Posição
+                    </p>
+                    <p className="font-semibold text-foreground text-lg">{selectedHero.position}</p>
+                  </div>
+                </div>
 
-            {/* Vantagens */}
-            <div>
-              <h3 className="text-lg font-semibold text-orange-400 mb-3 flex items-center gap-2">
-                <Zap size={20} /> Vantagens
-              </h3>
-              <div className="space-y-2">
+                {/* Vantagem do Tipo */}
+                <div className="p-4 bg-gradient-to-r from-orange-600/10 to-orange-600/5 rounded border border-orange-600/30 border-l-4 border-l-orange-400">
+                  <h4 className="font-semibold text-orange-400 mb-2 flex items-center gap-2">
+                    <Lightbulb size={18} /> Vantagem do Tipo
+                  </h4>
+                  <p className="text-foreground">
+                    {HERO_TYPES[selectedHero.type as keyof typeof HERO_TYPES]?.advantage || 'N/A'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Vantagens */}
+          <TabsContent value="advantages" className="space-y-4 mt-4">
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="text-orange-400 flex items-center gap-2">
+                  <Zap size={20} /> Vantagens do Herói
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 {getAdvantages(selectedHero).map((advantage, idx) => (
-                  <div key={idx} className="p-3 bg-background rounded border border-border flex items-start gap-2">
-                    <span className="text-orange-400 mt-1">✓</span>
-                    <span className="text-foreground">{advantage}</span>
+                  <div
+                    key={idx}
+                    className="p-4 bg-gradient-to-r from-green-600/10 to-green-600/5 rounded border border-green-600/30 border-l-4 border-l-green-400 flex items-start gap-3"
+                  >
+                    <span className="text-green-400 font-bold text-xl mt-0.5">✓</span>
+                    <span className="text-foreground text-sm">{advantage}</span>
                   </div>
                 ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            {/* Recomendações */}
-            <div>
-              <h3 className="text-lg font-semibold text-orange-400 mb-3 flex items-center gap-2">
-                <Target size={20} /> Recomendações
-              </h3>
-              <div className="space-y-2">
-                {getRecommendations(selectedHero).map((rec, idx) => (
-                  <div key={idx} className="p-3 bg-background rounded border border-border flex items-start gap-2">
-                    <span className="text-blue-400 mt-1">→</span>
-                    <span className="text-foreground">{rec}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Recomendações */}
+          <TabsContent value="recommendations" className="space-y-4 mt-4">
+            <div className="space-y-4">
+              {/* Recomendações */}
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-orange-400 flex items-center gap-2">
+                    <Target size={20} /> Recomendações
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {getRecommendations(selectedHero).map((rec, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 bg-gradient-to-r from-blue-600/10 to-blue-600/5 rounded border border-blue-600/30 border-l-4 border-l-blue-400 flex items-start gap-3"
+                    >
+                      <span className="text-blue-400 font-bold text-xl mt-0.5">→</span>
+                      <span className="text-foreground text-sm">{rec}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
 
-            {/* Melhorias */}
-            <div>
-              <h3 className="text-lg font-semibold text-orange-400 mb-3 flex items-center gap-2">
-                <Shield size={20} /> Melhorias Sugeridas
-              </h3>
-              <div className="space-y-2">
-                {getImprovements(selectedHero).map((improvement, idx) => (
-                  <div key={idx} className="p-3 bg-background rounded border border-border flex items-start gap-2">
-                    <span className="text-green-400 mt-1">⬆</span>
-                    <span className="text-foreground">{improvement}</span>
-                  </div>
-                ))}
-              </div>
+              {/* Melhorias Sugeridas */}
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-orange-400 flex items-center gap-2">
+                    <Shield size={20} /> Melhorias Sugeridas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {getImprovements(selectedHero).map((improvement, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 bg-gradient-to-r from-purple-600/10 to-purple-600/5 rounded border border-purple-600/30 border-l-4 border-l-purple-400 flex items-start gap-3"
+                    >
+                      <span className="text-purple-400 font-bold text-xl mt-0.5">⬆</span>
+                      <span className="text-foreground text-sm">{improvement}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
             </div>
-
-            {/* Tipo do Herói - Vantagem */}
-            <div className="p-4 bg-background rounded border border-border border-l-4" style={{ borderLeftColor: HERO_TYPES[selectedHero.type as keyof typeof HERO_TYPES]?.color || '#ff6f00' }}>
-              <h4 className="font-semibold text-foreground mb-2">Vantagem do Tipo</h4>
-              <p className="text-foreground">
-                {HERO_TYPES[selectedHero.type as keyof typeof HERO_TYPES]?.advantage || 'N/A'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          </TabsContent>
+        </Tabs>
       )}
 
       {/* Mensagem quando nenhum herói é selecionado */}
       {!selectedHero && (
         <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <AlertCircle className="mx-auto mb-4 text-muted-foreground" size={32} />
-              <p className="text-muted-foreground">Selecione um herói acima para ver análise detalhada</p>
+          <CardContent className="pt-8 pb-8">
+            <div className="text-center">
+              <AlertCircle className="mx-auto mb-4 text-muted-foreground" size={40} />
+              <p className="text-muted-foreground text-lg">Selecione um herói acima para ver análise detalhada</p>
             </div>
           </CardContent>
         </Card>
