@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +15,8 @@ export default function HeroAnalyzer() {
   const [selectedHero, setSelectedHero] = useState<any>(null);
   const [heroLevel, setHeroLevel] = useState(1);
   const [heroStars, setHeroStars] = useState(0);
-  const [chipLevels, setChipLevels] = useState({ attack: 0, defense: 0, movement: 0, interference: 0 });
+  const [equipmentLevels, setEquipmentLevels] = useState({ slot1: 0, slot2: 0, slot3: 0, slot4: 0, slot5: 0 });
+  const [abilityLevels, setAbilityLevels] = useState<Record<string, number>>({});
   const [hasSpecialWeapon, setHasSpecialWeapon] = useState(false);
   const [specialWeaponLevel, setSpecialWeaponLevel] = useState(0);
 
@@ -49,9 +52,13 @@ export default function HeroAnalyzer() {
     // Adicionar poder por estrelas
     basePower += heroStars * 5;
 
-    // Adicionar poder por chips
-    const totalChipLevel = Object.values(chipLevels).reduce((a, b) => a + b, 0);
-    basePower += totalChipLevel * 1.5;
+    // Adicionar poder por equipamentos
+    const totalEquipmentLevel = Object.values(equipmentLevels).reduce((a, b) => a + b, 0);
+    basePower += totalEquipmentLevel * 2;
+
+    // Adicionar poder por habilidades
+    const totalAbilityLevel = Object.values(abilityLevels).reduce((a, b) => a + b, 0);
+    basePower += totalAbilityLevel * 1.2;
 
     // Adicionar poder por arma especial
     if (hasSpecialWeapon) {
@@ -66,34 +73,34 @@ export default function HeroAnalyzer() {
     
     if (hero.rarity === 'UR') {
       recs.push('Herói de elite - Priorize o desenvolvimento ao máximo');
-      recs.push('Invista em armas e chips de raridade alta');
-      recs.push('Objetivo: Atingir nível máximo (200) e 6 estrelas');
+      recs.push('Invista em armas e equipamentos de raridade alta');
+      recs.push('Objetivo: Atingir nível máximo (175) e 5 estrelas');
     } else if (hero.rarity === 'SSR') {
       recs.push('Excelente herói - Vale muito a pena desenvolver');
       recs.push('Considere como segundo ou terceiro herói principal');
-      recs.push('Objetivo: Atingir nível 150-180 e 4-5 estrelas');
+      recs.push('Objetivo: Atingir nível 150-175 e 5 estrelas');
     } else if (hero.rarity === 'SR') {
       recs.push('Bom herói para iniciantes');
       recs.push('Útil para preencher formações enquanto desenvolve UR/SSR');
-      recs.push('Objetivo: Atingir nível 100 e 3 estrelas');
+      recs.push('Objetivo: Atingir nível 100 e 3-4 estrelas');
     }
 
     if (hero.role === 'Defesa') {
-      recs.push('Equipar com Defense Chips nível 8+');
+      recs.push('Equipar com Equipamentos de Defesa nível 4 em todos os slots');
       recs.push('Priorize aumentar HP e Defesa');
       recs.push('Posicionar na primeira linha do esquadrão');
     } else if (hero.role === 'Dano') {
-      recs.push('Equipar com Attack Chips nível 8+');
+      recs.push('Equipar com Equipamentos de Ataque nível 4 em todos os slots');
       recs.push('Priorize aumentar ATK e Velocidade');
       recs.push('Posicionar na segunda linha para máximo dano');
     } else if (hero.role === 'Suporte') {
-      recs.push('Equipar com Support Chips nível 6+');
+      recs.push('Equipar com Equipamentos de Suporte nível 3-4');
       recs.push('Priorize aumentar Efeito e Precisão');
       recs.push('Posicionar estrategicamente para apoiar o esquadrão');
     }
 
     if (hasSpecialWeapon) {
-      recs.push(`Arma Especial nível ${specialWeaponLevel} - Continue evoluindo até nível 10`);
+      recs.push(`Arma Especial nível ${specialWeaponLevel} - Continue evoluindo até nível máximo`);
     } else {
       recs.push('Prioridade: Obter e evoluir a Arma Especial deste herói');
     }
@@ -136,11 +143,11 @@ export default function HeroAnalyzer() {
 
   const getImprovements = (hero: any) => {
     return [
-      'Aumentar nível do herói para máximo',
-      'Equipar com armas de raridade alta',
-      'Treinar habilidades especiais',
-      'Aplicar chips de drone apropriados',
-      'Participar de eventos para ganhar recursos',
+      'Aumentar nível do herói para máximo (175)',
+      'Evoluir para 5 estrelas',
+      'Equipar com equipamentos nível 4',
+      'Treinar habilidades especiais para nível 30',
+      'Obter e evoluir Arma Especial',
       'Fazer parcerias com heróis complementares',
     ];
   };
@@ -152,27 +159,33 @@ export default function HeroAnalyzer() {
       tips.push('Seu herói ainda está em desenvolvimento inicial. Aumente o nível para 100+');
     } else if (heroLevel < 150) {
       tips.push('Bom progresso! Continue aumentando o nível para 150+');
-    } else if (heroLevel < 200) {
+    } else if (heroLevel < 175) {
       tips.push('Excelente! Seu herói está bem desenvolvido');
+    } else {
+      tips.push('✅ Nível máximo atingido!');
     }
 
     if (heroStars < 3) {
       tips.push('Aumente as estrelas - cada estrela aumenta significativamente o poder');
     } else if (heroStars < 5) {
-      tips.push('Continue evoluindo as estrelas para máximo potencial');
+      tips.push('Continue evoluindo as estrelas para máximo potencial (5 estrelas)');
+    } else {
+      tips.push('✅ Máximo de estrelas atingido!');
     }
 
-    const avgChipLevel = Object.values(chipLevels).reduce((a, b) => a + b, 0) / 4;
-    if (avgChipLevel < 5) {
-      tips.push('Seus chips estão baixos. Priorize evoluir chips para nível 8+');
-    } else if (avgChipLevel < 8) {
-      tips.push('Chips em bom nível. Continue evoluindo para nível 10');
+    const avgEquipmentLevel = Object.values(equipmentLevels).reduce((a, b) => a + b, 0) / 5;
+    if (avgEquipmentLevel < 2) {
+      tips.push('Seus equipamentos estão baixos. Priorize evoluir para nível 3-4');
+    } else if (avgEquipmentLevel < 4) {
+      tips.push('Equipamentos em bom nível. Continue evoluindo para nível 4 (máximo)');
+    } else {
+      tips.push('✅ Equipamentos no nível máximo!');
     }
 
     if (!hasSpecialWeapon) {
       tips.push('⚠️ IMPORTANTE: Você não tem a Arma Especial! Isso reduz muito o poder do herói');
     } else if (specialWeaponLevel < 5) {
-      tips.push('Sua Arma Especial está baixa. Evolua para nível 8+');
+      tips.push('Sua Arma Especial está baixa. Evolua para nível máximo');
     }
 
     return tips;
@@ -184,21 +197,21 @@ export default function HeroAnalyzer() {
     if (hero.role === 'Defesa') {
       suggestions.push({
         title: 'Build Defensivo',
-        chips: 'Defense Chips nível 8+ em todos os slots',
+        equipment: 'Equipamentos de Defesa nível 4 em todos os slots',
         weapon: 'Arma Especial com bônus de Defesa',
         stats: 'Maximize HP e Defesa',
       });
     } else if (hero.role === 'Dano') {
       suggestions.push({
         title: 'Build Ofensivo',
-        chips: 'Attack Chips nível 8+ em todos os slots',
+        equipment: 'Equipamentos de Ataque nível 4 em todos os slots',
         weapon: 'Arma Especial com bônus de ATK',
         stats: 'Maximize ATK e Velocidade',
       });
     } else if (hero.role === 'Suporte') {
       suggestions.push({
         title: 'Build de Suporte',
-        chips: 'Support Chips nível 6+ em todos os slots',
+        equipment: 'Equipamentos de Suporte nível 3-4',
         weapon: 'Arma Especial com bônus de Efeito',
         stats: 'Maximize Efeito e Precisão',
       });
@@ -214,9 +227,17 @@ export default function HeroAnalyzer() {
     // Reset campos quando seleciona novo herói
     setHeroLevel(1);
     setHeroStars(0);
-    setChipLevels({ attack: 0, defense: 0, movement: 0, interference: 0 });
+    setEquipmentLevels({ slot1: 0, slot2: 0, slot3: 0, slot4: 0, slot5: 0 });
+    setAbilityLevels({});
     setHasSpecialWeapon(false);
     setSpecialWeaponLevel(0);
+  };
+
+  const updateAbilityLevel = (abilityId: string, level: number) => {
+    setAbilityLevels(prev => ({
+      ...prev,
+      [abilityId]: level
+    }));
   };
 
   return (
@@ -284,90 +305,113 @@ export default function HeroAnalyzer() {
 
                   {/* Nível */}
                   <div className="space-y-2">
-                    <Label htmlFor="level" className="text-foreground">Nível do Herói: {heroLevel}</Label>
+                    <Label htmlFor="level" className="text-foreground">Nível do Herói: {heroLevel} / 175</Label>
                     <Input
                       id="level"
                       type="range"
                       min="1"
-                      max="200"
+                      max="175"
                       value={heroLevel}
                       onChange={(e) => setHeroLevel(Number(e.target.value))}
                       className="w-full"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>1</span>
-                      <span>200</span>
+                      <span>175</span>
                     </div>
                   </div>
 
                   {/* Estrelas */}
                   <div className="space-y-2">
-                    <Label className="text-foreground">Estrelas: {heroStars}⭐</Label>
+                    <Label className="text-foreground">Estrelas: {heroStars} / 5</Label>
                     <div className="flex gap-2">
-                      {[0, 1, 2, 3, 4, 5, 6].map((star) => (
+                      {[0, 1, 2, 3, 4, 5].map((star) => (
                         <button
                           key={star}
                           onClick={() => setHeroStars(star)}
-                          className={`p-2 rounded border-2 transition-all ${
+                          className={`p-2 rounded transition-colors ${
                             heroStars >= star
-                              ? 'border-yellow-400 bg-yellow-400/10'
-                              : 'border-border hover:border-yellow-400'
+                              ? 'bg-yellow-500 text-white'
+                              : 'bg-background border border-border text-muted-foreground'
                           }`}
                         >
-                          <Star size={20} className={heroStars >= star ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'} />
+                          <Star size={20} />
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Chips */}
-                  <div className="space-y-3 pt-2 border-t border-border">
-                    <p className="font-semibold text-orange-400">Níveis dos Chips</p>
-                    {Object.entries(chipLevels).map(([chipType, level]) => (
-                      <div key={chipType} className="space-y-1">
-                        <Label htmlFor={`chip-${chipType}`} className="text-foreground capitalize">
-                          {chipType === 'attack' && '⚔️ Attack'} 
-                          {chipType === 'defense' && '🛡️ Defense'} 
-                          {chipType === 'movement' && '💨 Movement'} 
-                          {chipType === 'interference' && '⚡ Interference'}: {level}
-                        </Label>
+                  {/* Equipamentos */}
+                  <div className="space-y-3 pt-2">
+                    <Label className="text-foreground font-semibold">Equipamentos (Máximo Nível 4)</Label>
+                    {[1, 2, 3, 4, 5].map((slot) => (
+                      <div key={slot} className="space-y-1">
+                        <div className="flex justify-between">
+                          <Label className="text-sm">Slot {slot}: {equipmentLevels[`slot${slot}` as keyof typeof equipmentLevels]}</Label>
+                          {equipmentLevels[`slot${slot}` as keyof typeof equipmentLevels] === 4 && (
+                            <Badge className="bg-red-600">MÁXIMO</Badge>
+                          )}
+                        </div>
                         <Input
-                          id={`chip-${chipType}`}
                           type="range"
                           min="0"
-                          max="10"
-                          value={level}
-                          onChange={(e) => setChipLevels({
-                            ...chipLevels,
-                            [chipType]: Number(e.target.value)
-                          })}
+                          max="4"
+                          value={equipmentLevels[`slot${slot}` as keyof typeof equipmentLevels]}
+                          onChange={(e) => setEquipmentLevels(prev => ({
+                            ...prev,
+                            [`slot${slot}`]: Number(e.target.value)
+                          }))}
                           className="w-full"
                         />
                       </div>
                     ))}
                   </div>
 
+                  {/* Habilidades */}
+                  {selectedHero.abilities && selectedHero.abilities.length > 0 && (
+                    <div className="space-y-3 pt-2">
+                      <Label className="text-foreground font-semibold">Habilidades (Máximo Nível 30)</Label>
+                      {selectedHero.abilities.map((ability: any) => (
+                        <div key={ability.id} className="space-y-1">
+                          <div className="flex justify-between">
+                            <Label className="text-sm">{ability.name}: {abilityLevels[ability.id] || 0}</Label>
+                            {(abilityLevels[ability.id] || 0) === 30 && (
+                              <Badge className="bg-red-600">MÁXIMO</Badge>
+                            )}
+                          </div>
+                          <Input
+                            type="range"
+                            min="0"
+                            max="30"
+                            value={abilityLevels[ability.id] || 0}
+                            onChange={(e) => updateAbilityLevel(ability.id, Number(e.target.value))}
+                            className="w-full"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Arma Especial */}
-                  <div className="space-y-3 pt-2 border-t border-border">
-                    <div className="flex items-center gap-3">
+                  <div className="space-y-2 pt-2 border-t border-border">
+                    <div className="flex items-center gap-2">
                       <Checkbox
-                        id="special-weapon"
+                        id="weapon"
                         checked={hasSpecialWeapon}
-                        onCheckedChange={(checked) => setHasSpecialWeapon(checked as boolean)}
+                        onCheckedChange={(checked) => {
+                          setHasSpecialWeapon(checked as boolean);
+                          if (!checked) setSpecialWeaponLevel(0);
+                        }}
                       />
-                      <Label htmlFor="special-weapon" className="text-foreground cursor-pointer">
-                        <Sword size={16} className="inline mr-2" />
-                        Tem Arma Especial?
-                      </Label>
+                      <Label htmlFor="weapon" className="text-foreground">Possui Arma Especial</Label>
                     </div>
 
                     {hasSpecialWeapon && (
-                      <div className="space-y-1 pl-6">
-                        <Label htmlFor="weapon-level" className="text-foreground">
-                          Nível da Arma: {specialWeaponLevel}
-                        </Label>
+                      <div className="space-y-2 pl-6">
+                        <div className="flex justify-between">
+                          <Label className="text-sm">Nível da Arma: {specialWeaponLevel}</Label>
+                        </div>
                         <Input
-                          id="weapon-level"
                           type="range"
                           min="0"
                           max="10"
@@ -387,64 +431,56 @@ export default function HeroAnalyzer() {
           <TabsContent value="overview" className="space-y-4 mt-4">
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-orange-400 flex items-center gap-2">
-                  <Zap size={20} /> Vantagens
-                </CardTitle>
+                <CardTitle className="text-orange-400">Vantagens</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {getAdvantages(selectedHero).map((advantage, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 bg-gradient-to-r from-green-600/10 to-green-600/5 rounded border border-green-600/30 border-l-4 border-l-green-400 flex items-start gap-3"
-                  >
-                    <span className="text-green-400 font-bold text-xl mt-0.5">✓</span>
-                    <span className="text-foreground text-sm">{advantage}</span>
-                  </div>
-                ))}
+              <CardContent>
+                <div className="space-y-2">
+                  {analysis.advantages.map((adv: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <Zap className="text-yellow-400 mt-1 flex-shrink-0" size={18} />
+                      <span className="text-foreground">{adv}</span>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
 
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-orange-400 flex items-center gap-2">
-                  <Target size={20} /> Recomendações
-                </CardTitle>
+                <CardTitle className="text-orange-400">Recomendações</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {getDetailedRecommendations(selectedHero).map((rec, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 bg-gradient-to-r from-blue-600/10 to-blue-600/5 rounded border border-blue-600/30 border-l-4 border-l-blue-400 flex items-start gap-3"
-                  >
-                    <span className="text-blue-400 font-bold text-xl mt-0.5">→</span>
-                    <span className="text-foreground text-sm">{rec}</span>
-                  </div>
-                ))}
+              <CardContent>
+                <div className="space-y-2">
+                  {analysis.recommendations.map((rec: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <Target className="text-cyan-400 mt-1 flex-shrink-0" size={18} />
+                      <span className="text-foreground">{rec}</span>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Build */}
           <TabsContent value="build" className="space-y-4 mt-4">
-            {getBuildSuggestions(selectedHero).map((build, idx) => (
-              <Card key={idx} className="bg-card border-border">
+            {analysis.buildSuggestions.map((build: any, idx: number) => (
+              <Card key={idx} className="bg-card border-border border-l-4 border-l-cyan-400">
                 <CardHeader>
-                  <CardTitle className="text-orange-400 flex items-center gap-2">
-                    <Sword size={20} /> {build.title}
-                  </CardTitle>
+                  <CardTitle className="text-cyan-400">{build.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-4 bg-background rounded border border-border">
-                    <p className="text-xs text-muted-foreground mb-1">Chips Recomendados</p>
-                    <p className="text-foreground font-semibold">{build.chips}</p>
+                <CardContent className="space-y-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Equipamentos</p>
+                    <p className="text-foreground">{build.equipment}</p>
                   </div>
-                  <div className="p-4 bg-background rounded border border-border">
-                    <p className="text-xs text-muted-foreground mb-1">Arma Especial</p>
-                    <p className="text-foreground font-semibold">{build.weapon}</p>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Arma Especial</p>
+                    <p className="text-foreground">{build.weapon}</p>
                   </div>
-                  <div className="p-4 bg-background rounded border border-border">
-                    <p className="text-xs text-muted-foreground mb-1">Estatísticas Prioritárias</p>
-                    <p className="text-foreground font-semibold">{build.stats}</p>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Estatísticas Prioritárias</p>
+                    <p className="text-foreground">{build.stats}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -455,55 +491,37 @@ export default function HeroAnalyzer() {
           <TabsContent value="tips" className="space-y-4 mt-4">
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-orange-400 flex items-center gap-2">
-                  <Lightbulb size={20} /> Dicas de Desenvolvimento
-                </CardTitle>
+                <CardTitle className="text-orange-400">Dicas de Desenvolvimento</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {getDevelopmentTips(selectedHero).map((tip, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 bg-gradient-to-r from-purple-600/10 to-purple-600/5 rounded border border-purple-600/30 border-l-4 border-l-purple-400 flex items-start gap-3"
-                  >
-                    <span className="text-purple-400 font-bold text-xl mt-0.5">💡</span>
-                    <span className="text-foreground text-sm">{tip}</span>
-                  </div>
-                ))}
+              <CardContent>
+                <div className="space-y-2">
+                  {analysis.developmentTips.map((tip: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <Lightbulb className="text-yellow-400 mt-1 flex-shrink-0" size={18} />
+                      <span className="text-foreground">{tip}</span>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
 
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-orange-400 flex items-center gap-2">
-                  <Shield size={20} /> Melhorias Sugeridas
-                </CardTitle>
+                <CardTitle className="text-orange-400">Melhorias Sugeridas</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {getImprovements(selectedHero).map((improvement, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 bg-gradient-to-r from-cyan-600/10 to-cyan-600/5 rounded border border-cyan-600/30 border-l-4 border-l-cyan-400 flex items-start gap-3"
-                  >
-                    <span className="text-cyan-400 font-bold text-xl mt-0.5">⬆</span>
-                    <span className="text-foreground text-sm">{improvement}</span>
-                  </div>
-                ))}
+              <CardContent>
+                <div className="space-y-2">
+                  {analysis.improvements.map((imp: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <TrendingUp className="text-green-400 mt-1 flex-shrink-0" size={18} />
+                      <span className="text-foreground">{imp}</span>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-      )}
-
-      {/* Mensagem quando nenhum herói é selecionado */}
-      {!selectedHero && (
-        <Card className="bg-card border-border">
-          <CardContent className="pt-8 pb-8">
-            <div className="text-center">
-              <AlertCircle className="mx-auto mb-4 text-muted-foreground" size={40} />
-              <p className="text-muted-foreground text-lg">Selecione um herói acima para ver análise detalhada</p>
-            </div>
-          </CardContent>
-        </Card>
       )}
     </div>
   );
