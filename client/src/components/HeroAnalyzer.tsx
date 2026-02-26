@@ -459,12 +459,15 @@ export default function HeroAnalyzer() {
                     {hasSpecialWeapon && (
                       <div className="space-y-2 pl-6">
                         <div className="flex justify-between">
-                          <Label className="text-sm">Nível da Arma: {specialWeaponLevel}</Label>
+                          <Label className="text-sm">Nível da Arma: {specialWeaponLevel} / 30</Label>
+                          {specialWeaponLevel === 30 && (
+                            <Badge className="bg-red-600">MÁXIMO</Badge>
+                          )}
                         </div>
                         <Input
                           type="range"
                           min="0"
-                          max="10"
+                          max="30"
                           value={specialWeaponLevel}
                           onChange={(e) => setSpecialWeaponLevel(Number(e.target.value))}
                           className="w-full"
