@@ -1,0 +1,45 @@
+        const extractedHeroNames = extractHeroNames(content);
+        console.log("Nomes de herois extraidos:", extractedHeroNames);
+
+        // Adicionar heróis identificados à análise
+        analysis.squad.heroes = identifiedHeroes.map((h, idx) => ({
+          position: idx + 1,
+          name: h.heroName,
+          level: 0,
+          rarity: 0,
+          role: h.role as 'Tank' | 'Aircraft' | 'Missile' | 'Support' | 'Unknown',
+          confidence: h.confidence
+        }));
+
+        // Recalcular composição baseado em heróis identificados
+        analysis.squad.composition = {
+          tanks: identifiedHeroes.filter(h => h.role === "Tank").length,
+          aircraft: identifiedHeroes.filter(h => h.role === "Aircraft").length,
+          missile: identifiedHeroes.filter(h => h.role === "Missile").length,
+          support: identifiedHeroes.filter(h => h.role === "Support").length,
+        };
+
+        // Converter recomendações de strings para objetos estruturados
+        const structuredRecommendations = (analysis.analysis.recommendations || []).map((rec: string, idx: number) => ({
+          title: typeof rec === 'string' ? (rec.split(':')[0] || 'Recomendação') : 'Recomendação',
+          description: typeof rec === 'string' ? (rec.split(':')[1] || rec) : String(rec),
+          priority: idx === 0 ? 'high' : idx === 1 ? 'medium' : 'low' as 'high' | 'medium' | 'low'
+        }));
+        analysis.analysis.recommendations = structuredRecommendations;
+
+        return {
+          success: true,
+          analysis,
+          detectedHeroes: identifiedHeroes.map(h => ({ name: h.heroName, confidence: h.confidence, role: h.role })),
+          timestamp: new Date().toISOString(),
+          identificationMethod: "fuzzy_matching",
+          visualDescriptions: heroDescriptions,
+        };
+      } catch (error) {
+        console.error("Erro ao analisar esquadrão:", error);
+        throw new Error(
+          `Falha ao analisar esquadrão: ${error instanceof Error ? error.message : "Erro desconhecido"}`
+        );
+      }
+    }),
+});
