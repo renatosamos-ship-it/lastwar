@@ -4,18 +4,26 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertCircle, Zap, Shield, Target, TrendingUp, Lightbulb, Star, Sword } from 'lucide-react';
+import { AlertCircle, Zap, Shield, Target, TrendingUp, Lightbulb, Star, Sword, Gauge } from 'lucide-react';
 import { HEROES, HERO_TYPES } from '@shared/heroes';
 import HeroCard from '@/components/HeroCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 
+// Definição dos equipamentos
+const EQUIPMENT_SLOTS = {
+  slot1: { name: 'Canhão', icon: '🔫', description: 'Aumenta ATK' },
+  slot2: { name: 'Chip de Dados', icon: '💾', description: 'Aumenta Velocidade' },
+  slot3: { name: 'Armadura', icon: '🛡️', description: 'Aumenta DEF' },
+  slot4: { name: 'Radar', icon: '📡', description: 'Aumenta Precisão' },
+};
+
 export default function HeroAnalyzer() {
   const [selectedHero, setSelectedHero] = useState<any>(null);
   const [heroLevel, setHeroLevel] = useState(1);
   const [heroStars, setHeroStars] = useState(0);
-  const [equipmentLevels, setEquipmentLevels] = useState({ slot1: 0, slot2: 0, slot3: 0, slot4: 0, slot5: 0 });
+  const [equipmentLevels, setEquipmentLevels] = useState({ slot1: 0, slot2: 0, slot3: 0, slot4: 0 });
   const [abilityLevels, setAbilityLevels] = useState<Record<string, number>>({});
   const [hasSpecialWeapon, setHasSpecialWeapon] = useState(false);
   const [specialWeaponLevel, setSpecialWeaponLevel] = useState(0);
@@ -34,6 +42,7 @@ export default function HeroAnalyzer() {
       improvements: getImprovements(hero),
       developmentTips: getDevelopmentTips(hero),
       buildSuggestions: getBuildSuggestions(hero),
+      equipmentRecommendations: getEquipmentRecommendations(hero),
     };
   };
 
@@ -54,7 +63,7 @@ export default function HeroAnalyzer() {
 
     // Adicionar poder por equipamentos
     const totalEquipmentLevel = Object.values(equipmentLevels).reduce((a, b) => a + b, 0);
-    basePower += totalEquipmentLevel * 2;
+    basePower += totalEquipmentLevel * 2.5;
 
     // Adicionar poder por habilidades
     const totalAbilityLevel = Object.values(abilityLevels).reduce((a, b) => a + b, 0);
@@ -68,12 +77,49 @@ export default function HeroAnalyzer() {
     return Math.round(basePower);
   };
 
+  const getEquipmentRecommendations = (hero: any) => {
+    if (hero.role === 'Dano') {
+      return {
+        priority: 'Priorize Slots 1 e 2',
+        description: 'Canhão e Chip de Dados aumentam ATK e Velocidade',
+        slots: {
+          slot1: { level: 6, priority: 'MÁXIMA' },
+          slot2: { level: 6, priority: 'MÁXIMA' },
+          slot3: { level: 3, priority: 'Baixa' },
+          slot4: { level: 3, priority: 'Baixa' },
+        },
+      };
+    } else if (hero.role === 'Defesa') {
+      return {
+        priority: 'Priorize Slots 3 e 4',
+        description: 'Armadura e Radar aumentam DEF e Precisão',
+        slots: {
+          slot1: { level: 3, priority: 'Baixa' },
+          slot2: { level: 3, priority: 'Baixa' },
+          slot3: { level: 6, priority: 'MÁXIMA' },
+          slot4: { level: 6, priority: 'MÁXIMA' },
+        },
+      };
+    } else {
+      return {
+        priority: 'Balanceado',
+        description: 'Distribua igualmente entre todos os slots',
+        slots: {
+          slot1: { level: 5, priority: 'Alta' },
+          slot2: { level: 5, priority: 'Alta' },
+          slot3: { level: 5, priority: 'Alta' },
+          slot4: { level: 5, priority: 'Alta' },
+        },
+      };
+    }
+  };
+
   const getDetailedRecommendations = (hero: any) => {
     const recs = [];
     
     if (hero.rarity === 'UR') {
       recs.push('Herói de elite - Priorize o desenvolvimento ao máximo');
-      recs.push('Invista em armas e equipamentos de raridade alta');
+      recs.push('Invista em equipamentos nível 6 em todos os slots');
       recs.push('Objetivo: Atingir nível máximo (175) e 5 estrelas');
     } else if (hero.rarity === 'SSR') {
       recs.push('Excelente herói - Vale muito a pena desenvolver');
@@ -86,15 +132,15 @@ export default function HeroAnalyzer() {
     }
 
     if (hero.role === 'Defesa') {
-      recs.push('Equipar com Equipamentos de Defesa nível 4 em todos os slots');
-      recs.push('Priorize aumentar HP e Defesa');
+      recs.push('Priorize equipar Armadura (Slot 3) e Radar (Slot 4) nível 6');
+      recs.push('Objetivo: Maximizar DEF e Precisão');
       recs.push('Posicionar na primeira linha do esquadrão');
     } else if (hero.role === 'Dano') {
-      recs.push('Equipar com Equipamentos de Ataque nível 4 em todos os slots');
-      recs.push('Priorize aumentar ATK e Velocidade');
+      recs.push('Priorize equipar Canhão (Slot 1) e Chip de Dados (Slot 2) nível 6');
+      recs.push('Objetivo: Maximizar ATK e Velocidade');
       recs.push('Posicionar na segunda linha para máximo dano');
     } else if (hero.role === 'Suporte') {
-      recs.push('Equipar com Equipamentos de Suporte nível 3-4');
+      recs.push('Distribua equipamentos balanceadamente');
       recs.push('Priorize aumentar Efeito e Precisão');
       recs.push('Posicionar estrategicamente para apoiar o esquadrão');
     }
@@ -145,7 +191,7 @@ export default function HeroAnalyzer() {
     return [
       'Aumentar nível do herói para máximo (175)',
       'Evoluir para 5 estrelas',
-      'Equipar com equipamentos nível 4',
+      'Equipar com equipamentos nível 6',
       'Treinar habilidades especiais para nível 30',
       'Obter e evoluir Arma Especial',
       'Fazer parcerias com heróis complementares',
@@ -173,11 +219,11 @@ export default function HeroAnalyzer() {
       tips.push('✅ Máximo de estrelas atingido!');
     }
 
-    const avgEquipmentLevel = Object.values(equipmentLevels).reduce((a, b) => a + b, 0) / 5;
+    const avgEquipmentLevel = Object.values(equipmentLevels).reduce((a, b) => a + b, 0) / 4;
     if (avgEquipmentLevel < 2) {
-      tips.push('Seus equipamentos estão baixos. Priorize evoluir para nível 3-4');
-    } else if (avgEquipmentLevel < 4) {
-      tips.push('Equipamentos em bom nível. Continue evoluindo para nível 4 (máximo)');
+      tips.push('Seus equipamentos estão baixos. Priorize evoluir para nível 4-6');
+    } else if (avgEquipmentLevel < 5) {
+      tips.push('Equipamentos em bom nível. Continue evoluindo para nível 6 (máximo)');
     } else {
       tips.push('✅ Equipamentos no nível máximo!');
     }
@@ -197,21 +243,21 @@ export default function HeroAnalyzer() {
     if (hero.role === 'Defesa') {
       suggestions.push({
         title: 'Build Defensivo',
-        equipment: 'Equipamentos de Defesa nível 4 em todos os slots',
+        equipment: 'Armadura (Slot 3) e Radar (Slot 4) nível 6',
         weapon: 'Arma Especial com bônus de Defesa',
         stats: 'Maximize HP e Defesa',
       });
     } else if (hero.role === 'Dano') {
       suggestions.push({
         title: 'Build Ofensivo',
-        equipment: 'Equipamentos de Ataque nível 4 em todos os slots',
+        equipment: 'Canhão (Slot 1) e Chip de Dados (Slot 2) nível 6',
         weapon: 'Arma Especial com bônus de ATK',
         stats: 'Maximize ATK e Velocidade',
       });
     } else if (hero.role === 'Suporte') {
       suggestions.push({
         title: 'Build de Suporte',
-        equipment: 'Equipamentos de Suporte nível 3-4',
+        equipment: 'Todos os slots nível 5-6 balanceados',
         weapon: 'Arma Especial com bônus de Efeito',
         stats: 'Maximize Efeito e Precisão',
       });
@@ -227,7 +273,7 @@ export default function HeroAnalyzer() {
     // Reset campos quando seleciona novo herói
     setHeroLevel(1);
     setHeroStars(0);
-    setEquipmentLevels({ slot1: 0, slot2: 0, slot3: 0, slot4: 0, slot5: 0 });
+    setEquipmentLevels({ slot1: 0, slot2: 0, slot3: 0, slot4: 0 });
     setAbilityLevels({});
     setHasSpecialWeapon(false);
     setSpecialWeaponLevel(0);
@@ -265,8 +311,9 @@ export default function HeroAnalyzer() {
       {/* Análise Detalhada */}
       {selectedHero && analysis && (
         <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-card border border-border">
+          <TabsList className="grid w-full grid-cols-5 bg-card border border-border">
             <TabsTrigger value="stats">Estatísticas</TabsTrigger>
+            <TabsTrigger value="equipment">Equipamentos</TabsTrigger>
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>
             <TabsTrigger value="build">Build</TabsTrigger>
             <TabsTrigger value="tips">Dicas</TabsTrigger>
@@ -341,32 +388,6 @@ export default function HeroAnalyzer() {
                     </div>
                   </div>
 
-                  {/* Equipamentos */}
-                  <div className="space-y-3 pt-2">
-                    <Label className="text-foreground font-semibold">Equipamentos (Máximo Nível 4)</Label>
-                    {[1, 2, 3, 4, 5].map((slot) => (
-                      <div key={slot} className="space-y-1">
-                        <div className="flex justify-between">
-                          <Label className="text-sm">Slot {slot}: {equipmentLevels[`slot${slot}` as keyof typeof equipmentLevels]}</Label>
-                          {equipmentLevels[`slot${slot}` as keyof typeof equipmentLevels] === 4 && (
-                            <Badge className="bg-red-600">MÁXIMO</Badge>
-                          )}
-                        </div>
-                        <Input
-                          type="range"
-                          min="0"
-                          max="4"
-                          value={equipmentLevels[`slot${slot}` as keyof typeof equipmentLevels]}
-                          onChange={(e) => setEquipmentLevels(prev => ({
-                            ...prev,
-                            [`slot${slot}`]: Number(e.target.value)
-                          }))}
-                          className="w-full"
-                        />
-                      </div>
-                    ))}
-                  </div>
-
                   {/* Habilidades */}
                   {selectedHero.abilities && selectedHero.abilities.length > 0 && (
                     <div className="space-y-3 pt-2">
@@ -422,6 +443,68 @@ export default function HeroAnalyzer() {
                       </div>
                     )}
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Equipamentos */}
+          <TabsContent value="equipment" className="space-y-4 mt-4">
+            <Card className="bg-card border-border border-l-4 border-l-cyan-400">
+              <CardHeader>
+                <CardTitle className="text-cyan-400">Recomendação de Equipamentos</CardTitle>
+                <CardDescription>{analysis.equipmentRecommendations.priority}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-foreground">{analysis.equipmentRecommendations.description}</p>
+                
+                <div className="space-y-3">
+                  {Object.entries(EQUIPMENT_SLOTS).map(([slotKey, slot]: any) => {
+                    const slotData = analysis.equipmentRecommendations.slots[slotKey as keyof typeof analysis.equipmentRecommendations.slots];
+                    const currentLevel = equipmentLevels[slotKey as keyof typeof equipmentLevels];
+                    
+                    return (
+                      <div key={slotKey} className="space-y-2 p-3 bg-background rounded border border-border">
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">{slot.icon}</span>
+                            <div>
+                              <p className="font-semibold text-foreground">{slot.name}</p>
+                              <p className="text-xs text-muted-foreground">{slot.description}</p>
+                            </div>
+                          </div>
+                          <Badge className={
+                            slotData.priority === 'MÁXIMA' ? 'bg-red-600' :
+                            slotData.priority === 'Alta' ? 'bg-orange-600' :
+                            'bg-gray-600'
+                          }>
+                            {slotData.priority}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <Label className="text-sm">Nível: {currentLevel} / 6</Label>
+                          {currentLevel === 6 && <Badge className="bg-green-600">MÁXIMO</Badge>}
+                        </div>
+                        
+                        <Input
+                          type="range"
+                          min="0"
+                          max="6"
+                          value={currentLevel}
+                          onChange={(e) => setEquipmentLevels(prev => ({
+                            ...prev,
+                            [slotKey]: Number(e.target.value)
+                          }))}
+                          className="w-full"
+                        />
+                        
+                        <p className="text-xs text-muted-foreground">
+                          Recomendado: Nível {slotData.level}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
