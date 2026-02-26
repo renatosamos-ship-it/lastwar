@@ -413,6 +413,35 @@ export default function HeroAnalyzer() {
                     </div>
                   )}
 
+                  {/* Equipamentos */}
+                  <div className="space-y-3 pt-2 border-t border-border">
+                    <Label className="text-foreground font-semibold">Equipamentos (Máximo Nível 6)</Label>
+                    {Object.entries(EQUIPMENT_SLOTS).map(([slotKey, slot]: any) => (
+                      <div key={slotKey} className="space-y-1">
+                        <div className="flex justify-between items-center">
+                          <Label className="text-sm flex items-center gap-2">
+                            <span>{slot.icon}</span>
+                            <span>{slot.name}: {equipmentLevels[slotKey as keyof typeof equipmentLevels]}</span>
+                          </Label>
+                          {equipmentLevels[slotKey as keyof typeof equipmentLevels] === 6 && (
+                            <Badge className="bg-red-600">MÁXIMO</Badge>
+                          )}
+                        </div>
+                        <Input
+                          type="range"
+                          min="0"
+                          max="6"
+                          value={equipmentLevels[slotKey as keyof typeof equipmentLevels]}
+                          onChange={(e) => setEquipmentLevels(prev => ({
+                            ...prev,
+                            [slotKey]: Number(e.target.value)
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
                   {/* Arma Especial */}
                   <div className="space-y-2 pt-2 border-t border-border">
                     <div className="flex items-center gap-2">
